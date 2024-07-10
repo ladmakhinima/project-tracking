@@ -30,7 +30,7 @@ public class CommentServiceImpl implements CommentService {
         if (dto.parentId() != null) {
             parentComment = findCommentById(dto.parentId());
         }
-        Comment comment = new Comment(task, dto.content(), parentComment);
+        Comment comment = new Comment(task, dto.content(), creator, parentComment);
         comment = commentRepository.save(comment);
         return commentMapper.mapCommentToGetCommentDto(comment);
     }
@@ -62,7 +62,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     public boolean checkIsOwnerPerformAction(Comment comment, User creator) {
-        return !comment.getCreator().getId()
+        return comment.getCreator().getId()
                 .equals(creator.getId());
     }
 }

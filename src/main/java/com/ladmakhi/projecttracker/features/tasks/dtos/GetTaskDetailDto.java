@@ -1,6 +1,7 @@
 package com.ladmakhi.projecttracker.features.tasks.dtos;
 
 import com.ladmakhi.projecttracker.features.collection.Collection;
+import com.ladmakhi.projecttracker.features.comments.Comment;
 import com.ladmakhi.projecttracker.features.users.User;
 
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ public record GetTaskDetailDto(
         LocalDate reminderDate,
         List<String> attachments,
         Collection collection,
-        List<User> functors
+        List<User> functors,
+        List<Comment> comments
 ) {
 }

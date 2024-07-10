@@ -9,13 +9,16 @@ import com.ladmakhi.projecttracker.features.comments.Comment;
 import com.ladmakhi.projecttracker.features.users.User;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "tasks")
 public class Task extends CoreEntity {
     private String title;
@@ -43,7 +46,7 @@ public class Task extends CoreEntity {
     private Collection collection;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "task")
-    @JsonBackReference
+    @JsonManagedReference
     @JsonIgnore
     private List<Comment> comments;
 

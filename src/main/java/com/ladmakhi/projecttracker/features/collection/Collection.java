@@ -8,15 +8,14 @@ import com.ladmakhi.projecttracker.features.board.Board;
 import com.ladmakhi.projecttracker.features.tasks.Task;
 import com.ladmakhi.projecttracker.features.users.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Table(name = "collections")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Collection extends CoreEntity {

@@ -9,12 +9,15 @@ import com.ladmakhi.projecttracker.features.invitations.Invitation;
 import com.ladmakhi.projecttracker.features.users.User;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(name = "boards")
-@Data
+@Getter
+@Setter
 public class Board extends CoreEntity {
     private String name;
 

@@ -2,6 +2,7 @@ package com.ladmakhi.projecttracker.features.tasks;
 
 import com.ladmakhi.projecttracker.features.collection.Collection;
 import com.ladmakhi.projecttracker.features.collection.CollectionService;
+import com.ladmakhi.projecttracker.features.comments.Comment;
 import com.ladmakhi.projecttracker.features.tasks.dtos.CreateTaskDto;
 import com.ladmakhi.projecttracker.features.tasks.dtos.GetTaskDetailDto;
 import com.ladmakhi.projecttracker.features.tasks.dtos.GetTaskDto;
@@ -80,6 +81,8 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public GetTaskDetailDto getTaskDetailById(Long id) throws Exception {
         Task task = getTaskById(id);
+        List<Comment> comments = task.getComments().stream().filter(e -> e.getParent() == null).toList();
+        task.setComments(comments);
         return taskMapper.mapTaskToGetTaskDetailDto(task);
     }
 

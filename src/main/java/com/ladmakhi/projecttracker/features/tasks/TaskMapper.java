@@ -16,7 +16,8 @@ public class TaskMapper {
                 task.getReminderDate(),
                 task.getAttachments(),
                 task.getCollection(),
-                task.getFunctors()
+                task.getFunctors(),
+                task.getComments()
         );
     }
 
