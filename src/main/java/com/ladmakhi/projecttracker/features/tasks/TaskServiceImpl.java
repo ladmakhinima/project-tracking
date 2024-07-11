@@ -8,6 +8,8 @@ import com.ladmakhi.projecttracker.features.tasks.dtos.GetTaskDetailDto;
 import com.ladmakhi.projecttracker.features.tasks.dtos.GetTaskDto;
 import com.ladmakhi.projecttracker.features.tasks.dtos.UpdateTaskDto;
 import com.ladmakhi.projecttracker.features.users.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +18,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class TaskServiceImpl implements TaskService {
-    @Autowired
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
 
-    @Autowired
-    private TaskMapper taskMapper;
+    private final TaskMapper taskMapper;
 
-    @Autowired
-    private CollectionService collectionService;
+    private final CollectionService collectionService;
 
     @Override
     public GetTaskDto createTask(CreateTaskDto dto, User creator) throws Exception {
@@ -33,16 +33,16 @@ public class TaskServiceImpl implements TaskService {
             throw new Exception("Duplicated Title");
         }
         Collection collection = collectionService.getCollectionById(dto.collectionId());
-        Task task = new Task();
-        task.setTitle(dto.title());
-        task.setDescription(dto.description());
-        task.setAttachments(dto.attachments());
-        task.setCreator(creator);
-        if (dto.reminderDate() != null) {
-            task.setReminderDate(LocalDate.parse(dto.reminderDate(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+        var task = Task.builder()
+                .title(dto.title())
+                .description(dto.description())
+                .attachments(dto.attachments())
+                .creator(creator)
+                .collection(collection);
+        if(dto.reminderDate() != null) {
+            task.reminderDate(LocalDate.parse(dto.reminderDate(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
         }
-        task.setCollection(collection);
-        task = taskRepository.save(task);
+        taskRepository.save(task.build());
         return taskMapper.mapTaskToGetTaskDto(task);
     }
 

@@ -29,7 +29,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public GetBoardDetailResponseDto getBoardByIdWithDetail(Long id) throws Exception {
         Board board = getBoardById(id);
-        GetBoardDetailResponseDto dto = new GetBoardDetailResponseDto(board.getId(), board.getName(), board.getCollections());
+        GetBoardDetailResponseDto dto = new GetBoardDetailResponseDto(board.getId(), board.getName(), board.getCollections(), board.getTeam());
         return dto;
     }
 
@@ -74,5 +74,23 @@ public class BoardServiceImpl implements BoardService {
         boardRepository.delete(board);
         GetBoardResponseDto dto = new GetBoardResponseDto(board.getId(), board.getName());
         return dto;
+    }
+
+    @Override
+    public void addUserToBoard(Long boardId, User user) throws Exception {
+        Board board = getBoardById(boardId);
+        if (!board.getTeam().contains(user)) {
+            board.getTeam().add(user);
+            boardRepository.save(board);
+        }
+    }
+
+    @Override
+    public void deleteUserFromBoard(Long boardId, User user) throws Exception {
+        Board board = getBoardById(boardId);
+        if (board.getTeam().contains(user)) {
+            board.getTeam().remove(user);
+            boardRepository.save(board);
+        }
     }
 }

@@ -8,6 +8,7 @@ import com.ladmakhi.projecttracker.features.collection.Collection;
 import com.ladmakhi.projecttracker.features.comments.Comment;
 import com.ladmakhi.projecttracker.features.users.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "tasks")
+@Builder
 public class Task extends CoreEntity {
     private String title;
 
@@ -50,7 +52,7 @@ public class Task extends CoreEntity {
     @JsonIgnore
     private List<Comment> comments;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
     @JsonManagedReference
     private User creator;

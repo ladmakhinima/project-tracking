@@ -9,6 +9,7 @@ import com.ladmakhi.projecttracker.features.collection.Collection;
 import com.ladmakhi.projecttracker.features.comments.Comment;
 import com.ladmakhi.projecttracker.features.tasks.Task;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Getter
+@Builder
 @Setter
 public class User extends CoreEntity {
     private String username;

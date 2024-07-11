@@ -7,6 +7,7 @@ import com.ladmakhi.projecttracker.features.tasks.dtos.GetTaskDto;
 import com.ladmakhi.projecttracker.features.tasks.dtos.UpdateTaskDto;
 import com.ladmakhi.projecttracker.features.users.User;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +16,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/tasks")
 public class TaskController {
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
 
     @PostMapping
     public ResponseEntity<?> createTask(@RequestBody @Valid CreateTaskDto dto,

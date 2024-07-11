@@ -11,4 +11,10 @@ public interface UserService {
     GetUserResponseDto changeStatusOfUser(Long id, UserStatus status) throws Exception;
 
     User findUserById(Long id) throws Exception;
+
+    User findByEmail(String email, boolean throwError) throws Exception;
+
+    default User findByEmail(String email) throws Exception {
+        return findByEmail(email, false);
+    }
 }

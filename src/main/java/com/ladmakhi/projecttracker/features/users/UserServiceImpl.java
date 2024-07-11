@@ -2,19 +2,21 @@ package com.ladmakhi.projecttracker.features.users;
 
 import com.ladmakhi.projecttracker.features.users.dtos.CreateUserDto;
 import com.ladmakhi.projecttracker.features.users.dtos.GetUserResponseDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+
+    private final UserMapper userMapper;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public GetUserResponseDto createUser(CreateUserDto dto) throws Exception {
@@ -22,44 +24,27 @@ public class UserServiceImpl implements UserService {
         if (isDuplicateByUsernameOrEmail) {
             throw new Exception("Duplicated By Email or Username");
         }
-        User user = new User();
-        user.setEmail(dto.email());
-        user.setStatus(UserStatus.NOT_VERIFIED);
-        user.setUsername(dto.username());
-        user.setProfileUrl(dto.profileUrl());
-        user.setPassword(passwordEncoder.encode(dto.password()));
-        user.setLastStatusUpdateDate(LocalDate.now());
+        User user = User.builder()
+                .email(dto.email())
+                .status(UserStatus.NOT_VERIFIED)
+                .username(dto.username())
+                .profileUrl(dto.profileUrl())
+                .password(passwordEncoder.encode(dto.password()))
+                .lastStatusUpdateDate(LocalDate.now())
+                .build();
         User savedUser = userRepository.save(user);
-        GetUserResponseDto responseDto = new GetUserResponseDto(
-                savedUser.getId(),
-                savedUser.getUsername(),
-                savedUser.getEmail(),
-                savedUser.getProfileUrl(),
-                savedUser.getStatus(),
-                savedUser.getLastStatusUpdateDate()
-        );
-        return responseDto;
+        return userMapper.convertUserToGetUserResponseDto(savedUser);
     }
 
     @Override
     public GetUserResponseDto findUserByEmailAndPassword(String email, String password) throws Exception {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new Exception("User Is Not Found");
-        }
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new Exception("User Is Not Found"));
         boolean isPasswordMatch = passwordEncoder.matches(password, user.getPassword());
         if (!isPasswordMatch) {
             throw new Exception("Password Is Not Match With Email");
         }
-        GetUserResponseDto dto = new GetUserResponseDto(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getProfileUrl(),
-                user.getStatus(),
-                user.getLastStatusUpdateDate()
-        );
-        return dto;
+        return userMapper.convertUserToGetUserResponseDto(user);
     }
 
     @Override
@@ -68,19 +53,18 @@ public class UserServiceImpl implements UserService {
         user.setStatus(status);
         user.setLastStatusUpdateDate(LocalDate.now());
         User savedUser = userRepository.save(user);
-        GetUserResponseDto dto = new GetUserResponseDto(
-                savedUser.getId(),
-                savedUser.getUsername(),
-                savedUser.getEmail(),
-                savedUser.getProfileUrl(),
-                savedUser.getStatus(),
-                savedUser.getLastStatusUpdateDate()
-        );
-        return dto;
+        return userMapper.convertUserToGetUserResponseDto(savedUser);
     }
 
     @Override
     public User findUserById(Long id) throws Exception {
-        return userRepository.findById(id).orElseThrow(() -> new Exception("User Is Not Found"));
+        return userRepository.findById(id)
+                .orElseThrow(() -> new Exception("User Is Not Found"));
+    }
+
+    @Override
+    public User findByEmail(String email, boolean throwError) throws Exception {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> throwError ? new Exception("User is not found") : null);
     }
 }

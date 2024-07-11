@@ -19,4 +19,8 @@ public interface BoardService {
     GetBoardResponseDto updateBoardById(Long id, CreateOrUpdateBoardDto dto) throws Exception;
 
     GetBoardResponseDto deleteBoardById(Long id, User owner) throws Exception;
+
+    void addUserToBoard(Long boardId, User user) throws Exception;
+
+    void deleteUserFromBoard(Long boardId, User user) throws Exception;
 }
