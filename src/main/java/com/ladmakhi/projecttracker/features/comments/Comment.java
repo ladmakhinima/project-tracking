@@ -11,12 +11,13 @@ import lombok.*;
 
 import java.util.List;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "comments")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@Getter
+@Setter
 public class Comment extends CoreEntity {
     @ManyToOne
     @JoinColumn(name = "creator_id")
@@ -40,10 +41,10 @@ public class Comment extends CoreEntity {
     @JsonManagedReference
     private List<Comment> children;
 
-    public Comment(Task task, String content, User creator, Comment parent) {
-        this.task = task;
-        this.content = content;
-        this.parent = parent;
-        this.creator = creator;
+
+    @Transient
+    @JsonIgnore
+    public boolean isPerformActionByOwner(User owner) {
+        return this.getCreator().getId().equals(owner.getId());
     }
 }

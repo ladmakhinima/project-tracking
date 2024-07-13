@@ -8,9 +8,7 @@ import com.ladmakhi.projecttracker.features.collection.Collection;
 import com.ladmakhi.projecttracker.features.invitations.Invitation;
 import com.ladmakhi.projecttracker.features.users.User;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -18,10 +16,18 @@ import java.util.List;
 @Table(name = "boards")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Board extends CoreEntity {
     private String name;
 
-    @ManyToMany(mappedBy = "joinedBoards")
+    @ManyToMany
+    @JoinTable(
+            name = "boards_users_mapping",
+            joinColumns = @JoinColumn(name = "board_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     @JsonIgnore
     @JsonManagedReference
     private List<User> team;
@@ -40,4 +46,10 @@ public class Board extends CoreEntity {
     @JoinColumn(name = "owner_id")
     @JsonManagedReference
     private User owner;
+
+    @Transient
+    @JsonIgnore
+    public boolean isPerformActionByOwner(User owner) {
+        return this.getOwner().getId().equals(owner.getId());
+    }
 }

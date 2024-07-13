@@ -23,9 +23,9 @@ public class SimpleEmailServiceImpl extends AbstractEmailService {
     public boolean sendEmail(SendEmailDto dto) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setSubject(dto.subject());
-            message.setText(dto.content());
-            message.setTo(dto.email());
+            message.setSubject(dto.getSubject());
+            message.setText(dto.getContent());
+            message.setTo(dto.getEmail());
             message.setFrom(sendFrom);
             emailSender.send(message);
             return true;

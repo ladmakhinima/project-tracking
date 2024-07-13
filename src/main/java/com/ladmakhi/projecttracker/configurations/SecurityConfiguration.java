@@ -1,6 +1,7 @@
 package com.ladmakhi.projecttracker.configurations;
 
 import com.ladmakhi.projecttracker.core.filters.JsonWebTokenFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,12 +14,11 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration {
-    @Autowired
-    CorsConfigurationSource corsConfigurationSource;
+    private final CorsConfigurationSource corsConfigurationSource;
 
-    @Autowired
-    JsonWebTokenFilter jsonWebTokenFilter;
+    private final JsonWebTokenFilter jsonWebTokenFilter;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

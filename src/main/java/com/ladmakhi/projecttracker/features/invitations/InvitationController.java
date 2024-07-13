@@ -4,7 +4,7 @@ import com.ladmakhi.projecttracker.features.invitations.dtos.AcceptInvitationDto
 import com.ladmakhi.projecttracker.features.invitations.dtos.CreateInvitationDto;
 import com.ladmakhi.projecttracker.features.invitations.dtos.GetInvitationDto;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +13,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/invitations")
+@RequiredArgsConstructor
 public class InvitationController {
-    @Autowired
-    private InvitationService invitationService;
+    private final InvitationService invitationService;
 
     @PostMapping
     public ResponseEntity<?> addNewUserToBoard(@RequestBody @Valid CreateInvitationDto dto) throws Exception {

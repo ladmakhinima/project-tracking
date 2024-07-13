@@ -8,9 +8,7 @@ import com.ladmakhi.projecttracker.features.tasks.dtos.GetTaskDetailDto;
 import com.ladmakhi.projecttracker.features.tasks.dtos.GetTaskDto;
 import com.ladmakhi.projecttracker.features.tasks.dtos.UpdateTaskDto;
 import com.ladmakhi.projecttracker.features.users.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,7 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
 
@@ -28,22 +26,22 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public GetTaskDto createTask(CreateTaskDto dto, User creator) throws Exception {
-        boolean existByTitle = taskRepository.existsByTitle(dto.title());
+        boolean existByTitle = taskRepository.existsByTitle(dto.getTitle());
         if (existByTitle) {
             throw new Exception("Duplicated Title");
         }
-        Collection collection = collectionService.getCollectionById(dto.collectionId());
+        Collection collection = collectionService.getCollectionById(dto.getCollectionId());
         var task = Task.builder()
-                .title(dto.title())
-                .description(dto.description())
-                .attachments(dto.attachments())
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .attachments(dto.getAttachments())
                 .creator(creator)
                 .collection(collection);
-        if(dto.reminderDate() != null) {
-            task.reminderDate(LocalDate.parse(dto.reminderDate(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+        if (dto.getReminderDate() != null) {
+            task.reminderDate(LocalDate.parse(dto.getReminderDate(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
         }
-        taskRepository.save(task.build());
-        return taskMapper.mapTaskToGetTaskDto(task);
+        Task createdTask = taskRepository.save(task.build());
+        return taskMapper.mapTaskToGetTaskDto(createdTask);
     }
 
     @Override
@@ -56,17 +54,17 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public GetTaskDto updateTaskById(Long id, UpdateTaskDto dto) throws Exception {
         Task task = getTaskById(id);
-        if (task.getTitle() != dto.title()) {
-            boolean checkNewTitleDuplication = taskRepository.existsByTitleAndIdNot(dto.title(), id);
+        if (!task.getTitle().equals(dto.getTitle())) {
+            boolean checkNewTitleDuplication = taskRepository.existsByTitleAndIdNot(dto.getTitle(), id);
             if (checkNewTitleDuplication) {
                 throw new Exception("Duplicated Title");
             }
         }
-        task.setTitle(dto.title());
-        task.setDescription(dto.description());
-        task.setAttachments(dto.attachments());
-        if (dto.reminderDate() != null) {
-            task.setReminderDate(LocalDate.parse(dto.reminderDate(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+        task.setTitle(dto.getTitle());
+        task.setDescription(dto.getDescription());
+        task.setAttachments(dto.getAttachments());
+        if (dto.getReminderDate() != null) {
+            task.setReminderDate(LocalDate.parse(dto.getReminderDate(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
         }
         task = taskRepository.save(task);
         return taskMapper.mapTaskToGetTaskDto(task);

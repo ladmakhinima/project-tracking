@@ -34,10 +34,7 @@ public class GetCurrentUserResolver implements HandlerMethodArgumentResolver {
     ) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new Exception("Email Not Found");
-        }
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new Exception("Email Not Found"));
         return user;
     }
 }

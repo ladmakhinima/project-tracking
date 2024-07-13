@@ -8,13 +8,11 @@ import com.ladmakhi.projecttracker.features.collection.Collection;
 import com.ladmakhi.projecttracker.features.comments.Comment;
 import com.ladmakhi.projecttracker.features.users.User;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.Type;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,6 +20,8 @@ import java.util.List;
 @Setter
 @Table(name = "tasks")
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Task extends CoreEntity {
     private String title;
 
@@ -39,12 +39,11 @@ public class Task extends CoreEntity {
     @JsonManagedReference
     private List<User> functors;
 
-    @Column(columnDefinition = "json")
     private List<String> attachments;
 
     @ManyToOne
     @JoinColumn(name = "collection_id")
-    @JsonManagedReference
+    @JsonBackReference
     private Collection collection;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "task")

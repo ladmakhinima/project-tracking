@@ -4,6 +4,7 @@ import com.ladmakhi.projecttracker.features.auth.dtos.AuthResponseDto;
 import com.ladmakhi.projecttracker.features.auth.dtos.UserLoginDto;
 import com.ladmakhi.projecttracker.features.users.dtos.CreateUserDto;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController()
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody @Valid UserLoginDto dto) throws Exception {

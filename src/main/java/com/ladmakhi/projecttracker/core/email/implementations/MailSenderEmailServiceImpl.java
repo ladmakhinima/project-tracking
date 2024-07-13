@@ -23,9 +23,9 @@ public class MailSenderEmailServiceImpl extends AbstractEmailService {
         try {
 
             Email email = new Email();
-            email.setSubject(dto.subject());
-            email.setPlain(dto.content());
-            email.addRecipient("receiver email", dto.email());
+            email.setSubject(dto.getSubject());
+            email.setPlain(dto.getContent());
+            email.addRecipient("receiver email", dto.getEmail());
             email.setFrom("sender email", sendFrom);
             MailerSend mailerSend = new MailerSend();
             mailerSend.setToken(token);

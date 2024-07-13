@@ -2,39 +2,37 @@ package com.ladmakhi.projecttracker.features.collection;
 
 import com.ladmakhi.projecttracker.features.board.Board;
 import com.ladmakhi.projecttracker.features.board.BoardService;
-import com.ladmakhi.projecttracker.features.board.BoardServiceImpl;
 import com.ladmakhi.projecttracker.features.collection.dtos.CreateCollectionDto;
 import com.ladmakhi.projecttracker.features.collection.dtos.GetCollectionDetailDto;
 import com.ladmakhi.projecttracker.features.collection.dtos.GetCollectionDto;
 import com.ladmakhi.projecttracker.features.collection.dtos.UpdateCollectionDto;
 import com.ladmakhi.projecttracker.features.users.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CollectionServiceImpl implements CollectionService {
-    @Autowired
-    private CollectionRepository collectionRepository;
-
-    @Autowired
-    private BoardService boardService;
-
-    @Autowired
-    private CollectionMapper collectionMapper;
+    private final CollectionRepository collectionRepository;
+    private final BoardService boardService;
+    private final CollectionMapper collectionMapper;
 
     @Override
     public GetCollectionDto createCollection(CreateCollectionDto dto, User createdBy) throws Exception {
-        boolean isDuplicatedName = collectionRepository.existsByNameAndBoard_Id(dto.name(), dto.boardId());
-        if (isDuplicatedName) {
+        if (collectionRepository.existsByNameAndBoard_Id(dto.getName(), dto.getBoardId())) {
             throw new Exception("Some Collection With This name exist");
         }
-        Board board = boardService.getBoardById(dto.boardId());
-        Collection collection = new Collection(dto.name(), board, createdBy);
-        collection = collectionRepository.save(collection);
-        return collectionMapper.mapCollectionToGetCollectionDto(collection);
+        Board board = boardService.getBoardById(dto.getBoardId());
+
+        Collection collection = Collection.builder()
+                .name(dto.getName())
+                .board(board)
+                .createdBy(createdBy)
+                .build();
+        Collection savedCollection = collectionRepository.save(collection);
+        return collectionMapper.mapCollectionToGetCollectionDto(savedCollection);
     }
 
     @Override
@@ -51,7 +49,8 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     public Collection getCollectionById(Long id) throws Exception {
-        return collectionRepository.findById(id).orElseThrow(() -> new Exception("Collection Not Found"));
+        return collectionRepository.findById(id)
+                .orElseThrow(() -> new Exception("Collection Not Found"));
     }
 
     @Override
@@ -64,7 +63,7 @@ public class CollectionServiceImpl implements CollectionService {
     @Override
     public GetCollectionDto updateCollectionById(Long id, UpdateCollectionDto dto) throws Exception {
         Collection collection = getCollectionById(id);
-        collection.setName(dto.name());
+        collection.setName(dto.getName());
         collectionRepository.save(collection);
         return collectionMapper.mapCollectionToGetCollectionDto(collection);
     }

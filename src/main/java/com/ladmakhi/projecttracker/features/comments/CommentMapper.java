@@ -1,17 +1,10 @@
 package com.ladmakhi.projecttracker.features.comments;
 
 import com.ladmakhi.projecttracker.features.comments.dtos.GetCommentDto;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
-@Component
-public class CommentMapper {
-    public GetCommentDto mapCommentToGetCommentDto(Comment comment) {
-        return new GetCommentDto(
-                comment.getId(),
-                comment.getContent(),
-                comment.getCreator(),
-                comment.getChildren(),
-                comment.getTask()
-        );
-    }
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface CommentMapper {
+    GetCommentDto toCommentToGetCommentDto(Comment comment);
 }

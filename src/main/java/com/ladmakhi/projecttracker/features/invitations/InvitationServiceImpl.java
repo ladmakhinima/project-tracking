@@ -8,6 +8,7 @@ import com.ladmakhi.projecttracker.features.invitations.dtos.CreateInvitationDto
 import com.ladmakhi.projecttracker.features.invitations.dtos.GetInvitationDto;
 import com.ladmakhi.projecttracker.features.users.User;
 import com.ladmakhi.projecttracker.features.users.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -18,22 +19,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class InvitationServiceImpl implements InvitationService {
-    @Autowired
-    private InvitationRepository invitationRepository;
-
-    @Autowired
-    private InvitationMapper invitationMapper;
-
-    @Autowired
+    private final InvitationRepository invitationRepository;
+    private final InvitationMapper invitationMapper;
+    private final BoardService boardService;
+    private final UserService userService;
     @Qualifier("Simple-Email")
+    @Autowired
     private AbstractEmailService emailService;
-
-    @Autowired
-    private BoardService boardService;
-
-    @Autowired
-    private UserService userService;
 
     @Override
     public String generateToken() {
@@ -42,19 +36,19 @@ public class InvitationServiceImpl implements InvitationService {
 
     @Override
     public void acceptInvitation(AcceptInvitationDto dto) throws Exception {
-        Invitation invitation = invitationRepository.findByToken(dto.token())
-                .orElseThrow(() ->  new Exception("Invitation Not Found"));
+        Invitation invitation = invitationRepository.findByToken(dto.getToken())
+                .orElseThrow(() -> new Exception("Invitation Not Found"));
 
-        if (invitation.isExpired() || invitation.getExpireTime().before(new Date())) {
+        if (invitation.checkIsExpired()) {
             throw new Exception("Your Invitation Token is expired ...");
         }
         User user = userService.findByEmail(invitation.getEmail());
-        if (user == null && dto.user() != null) {
-            if (!invitation.getEmail().equals(dto.user().email())) {
+        if (user == null && dto.getUser() != null) {
+            if (!invitation.getEmail().equals(dto.getUser().getEmail())) {
                 throw new Exception("Invalid Email For create User");
             }
-            userService.createUser(dto.user());
-            user = userService.findByEmail(dto.user().email());
+            userService.createUser(dto.getUser());
+            user = userService.findByEmail(dto.getUser().getEmail());
         }
         if (user == null) {
             throw new Exception("User not found Please Provide User Information");
@@ -79,11 +73,16 @@ public class InvitationServiceImpl implements InvitationService {
 
     @Override
     public GetInvitationDto inviteUserToBoard(CreateInvitationDto dto) throws Exception {
-        invitationRepository.expireAllTokensByEmail(dto.email());
+        invitationRepository.expireAllTokensByEmail(dto.getEmail());
         String token = generateToken();
         Date expireTime = generateExpireTime();
-        Board board = boardService.getBoardById(dto.boardId());
-        Invitation invitation = new Invitation(dto.email(), token, expireTime, board);
+        Board board = boardService.getBoardById(dto.getBoardId());
+        Invitation invitation = Invitation.builder()
+                .email(dto.getEmail())
+                .token(token)
+                .expireTime(expireTime)
+                .board(board)
+                .build();
         invitation = invitationRepository.save(invitation);
         return invitationMapper.mapInvitationToGetInvitationDto(invitation);
     }

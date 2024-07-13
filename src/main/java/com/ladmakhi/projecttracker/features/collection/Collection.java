@@ -18,6 +18,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Collection extends CoreEntity {
     private String name;
 
@@ -28,17 +29,11 @@ public class Collection extends CoreEntity {
 
     @OneToMany(mappedBy = "collection")
     @JsonIgnore
-    @JsonBackReference
+    @JsonManagedReference
     private List<Task> tasks;
 
     @ManyToOne
     @JoinColumn(name = "created_by_id")
     @JsonManagedReference
     private User createdBy;
-
-    public Collection(String name, Board board, User createdBy) {
-        this.name = name;
-        this.board = board;
-        this.createdBy = createdBy;
-    }
 }

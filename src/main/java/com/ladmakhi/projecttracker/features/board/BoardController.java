@@ -6,6 +6,7 @@ import com.ladmakhi.projecttracker.features.board.dtos.GetBoardDetailResponseDto
 import com.ladmakhi.projecttracker.features.board.dtos.GetBoardResponseDto;
 import com.ladmakhi.projecttracker.features.users.User;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/boards")
+@RequiredArgsConstructor
 public class BoardController {
-    @Autowired
-    private BoardServiceImpl boardService;
+    private final BoardServiceImpl boardService;
 
     @PostMapping
     public ResponseEntity<GetBoardResponseDto> createBoardAction(

@@ -1,5 +1,6 @@
 package com.ladmakhi.projecttracker.features.invitations;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ladmakhi.projecttracker.core.entity.CoreEntity;
 import com.ladmakhi.projecttracker.features.board.Board;
@@ -12,6 +13,8 @@ import java.util.Date;
 @Table(name = "invitations")
 @Setter
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Invitation extends CoreEntity {
     private String email;
@@ -26,11 +29,9 @@ public class Invitation extends CoreEntity {
     @JsonManagedReference
     private Board board;
 
-
-    public Invitation(String email, String token, Date expireTime, Board board) {
-        this.email = email;
-        this.token = token;
-        this.expireTime = expireTime;
-        this.board = board;
+    @Transient
+    @JsonIgnore
+    public boolean checkIsExpired() {
+        return this.isExpired() || this.getExpireTime().before(new Date());
     }
 }

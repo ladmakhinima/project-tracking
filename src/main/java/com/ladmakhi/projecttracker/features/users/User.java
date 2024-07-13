@@ -9,19 +9,18 @@ import com.ladmakhi.projecttracker.features.collection.Collection;
 import com.ladmakhi.projecttracker.features.comments.Comment;
 import com.ladmakhi.projecttracker.features.tasks.Task;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Setter
+@Getter
 public class User extends CoreEntity {
     private String username;
 
@@ -35,12 +34,7 @@ public class User extends CoreEntity {
 
     private LocalDate lastStatusUpdateDate;
 
-    @ManyToMany
-    @JoinTable(
-            name = "boards_users_mapping",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "board_id")
-    )
+    @ManyToMany(mappedBy = "team")
     @JsonIgnore
     @JsonBackReference
     private List<Board> joinedBoards;

@@ -7,6 +7,7 @@ import com.ladmakhi.projecttracker.features.collection.dtos.GetCollectionDto;
 import com.ladmakhi.projecttracker.features.collection.dtos.UpdateCollectionDto;
 import com.ladmakhi.projecttracker.features.users.User;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/collections")
+@RequiredArgsConstructor
 public class CollectionController {
-    @Autowired
-    private CollectionService collectionService;
+    private final CollectionService collectionService;
 
     @PostMapping
     public ResponseEntity<?> createCollection(@Valid @RequestBody CreateCollectionDto dto, @GetCurrentUser() User user) throws Exception {

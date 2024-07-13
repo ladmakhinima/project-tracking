@@ -25,9 +25,9 @@ public class SendEmailInvitationAspect {
             returning = "result"
     )
     public void sendEmail(GetInvitationDto result) {
-        String email = result.email();
-        String subject = String.format("Welcome To Project Tracker, You Have Invitation From %s", result.board().getOwner().getEmail());
-        String content = String.format("Click On This Link Or Copy On Your Browser : %s", acceptLink + "?token=" + result.token());
+        String email = result.getEmail();
+        String subject = String.format("Welcome To Project Tracker, You Have Invitation From %s", result.getBoard().getOwner().getEmail());
+        String content = String.format("Click On This Link Or Copy On Your Browser : %s", acceptLink + "?token=" + result.getToken());
         SendEmailDto dto = new SendEmailDto(email, subject, content);
         boolean isSuccess = emailService.sendEmail(dto);
         System.out.println(String.format("Send Email : %s", isSuccess));
