@@ -14,4 +14,6 @@ public interface TaskMapper {
     GetTaskDto mapTaskToGetTaskDto(Task task);
 
     List<GetTaskDto> mapListOfTaskToListOfGetTaskDto(List<Task> tasks);
+
+    List<GetTaskDetailDto> mapListOfTaskToListOfGetTaskDetailDto(List<Task> tasks);
 }

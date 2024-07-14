@@ -3,17 +3,16 @@ package com.ladmakhi.projecttracker.features.tasks;
 import com.ladmakhi.projecttracker.features.collection.Collection;
 import com.ladmakhi.projecttracker.features.collection.CollectionService;
 import com.ladmakhi.projecttracker.features.comments.Comment;
-import com.ladmakhi.projecttracker.features.tasks.dtos.CreateTaskDto;
-import com.ladmakhi.projecttracker.features.tasks.dtos.GetTaskDetailDto;
-import com.ladmakhi.projecttracker.features.tasks.dtos.GetTaskDto;
-import com.ladmakhi.projecttracker.features.tasks.dtos.UpdateTaskDto;
+import com.ladmakhi.projecttracker.features.tasks.dtos.*;
 import com.ladmakhi.projecttracker.features.users.User;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.*;
+import lombok.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +22,8 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
 
     private final CollectionService collectionService;
+
+    private final EntityManager entityManager;
 
     @Override
     public GetTaskDto createTask(CreateTaskDto dto, User creator) throws Exception {
@@ -87,5 +88,55 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task getTaskById(Long id) throws Exception {
         return taskRepository.findById(id).orElseThrow(() -> new Exception("Task Is Not Found"));
+    }
+
+    @Override
+    public List<GetTaskDetailDto> searchTasks(SearchTaskDto dto) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Task> query = builder.createQuery(Task.class);
+        Root<Task> root = query.from(Task.class);
+        List<Predicate> predicates = new ArrayList<>();
+
+        dto.getTitle().ifPresent(title -> {
+            Predicate condition = builder.equal(root.get("title"), title);
+            predicates.add(condition);
+        });
+
+        dto.getDescription().ifPresent(description -> {
+            Predicate condition = builder.like(root.get("description"), description + "%");
+            predicates.add(condition);
+        });
+
+        dto.getCreatorId().ifPresent(creatorId -> {
+            Predicate condition = builder.equal(root.get("creator").get("id"), creatorId);
+            predicates.add(condition);
+        });
+
+        dto.getCollectionId().ifPresent(collectionId -> {
+            Predicate condition = builder.equal(root.get("collection").get("id"), collectionId);
+            predicates.add(condition);
+        });
+
+
+        if (dto.getReminderDateGte().isPresent() && dto.getReminderDateLte().isPresent()) {
+            LocalDate endDate = dto.getReminderDateLte().get();
+            LocalDate startDate = dto.getReminderDateGte().get();
+            Predicate condition = builder.and(
+                    builder.greaterThanOrEqualTo(root.get("reminderDate"), startDate),
+                    builder.lessThanOrEqualTo(root.get("reminderDate"), endDate)
+            );
+            predicates.add(condition);
+        } else if (dto.getReminderDateGte().isPresent()) {
+            LocalDate reminderDate = dto.getReminderDateGte().get();
+            Predicate condition = builder.greaterThanOrEqualTo(root.get("reminderDate"), reminderDate);
+            predicates.add(condition);
+        } else if (dto.getReminderDateLte().isPresent()) {
+            LocalDate reminderDate = dto.getReminderDateLte().get();
+            Predicate condition = builder.lessThanOrEqualTo(root.get("reminderDate"), reminderDate);
+            predicates.add(condition);
+        }
+        query.select(root).where(predicates.toArray(new Predicate[0]));
+        List<Task> tasks = (List<Task>) entityManager.createQuery(query).getResultList();
+        return taskMapper.mapListOfTaskToListOfGetTaskDetailDto(tasks);
     }
 }

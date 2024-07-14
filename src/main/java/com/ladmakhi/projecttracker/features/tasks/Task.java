@@ -9,10 +9,8 @@ import com.ladmakhi.projecttracker.features.comments.Comment;
 import com.ladmakhi.projecttracker.features.users.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Type;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -51,7 +49,7 @@ public class Task extends CoreEntity {
     @JsonIgnore
     private List<Comment> comments;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "creator_id")
     @JsonManagedReference
     private User creator;

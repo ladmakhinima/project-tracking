@@ -25,5 +25,6 @@ public class GetTaskDetailDto {
     private Collection collection;
     private List<User> functors;
     private List<Comment> comments;
+    private User creator;
 }
 

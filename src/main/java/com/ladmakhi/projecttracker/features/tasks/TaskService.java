@@ -1,9 +1,6 @@
 package com.ladmakhi.projecttracker.features.tasks;
 
-import com.ladmakhi.projecttracker.features.tasks.dtos.CreateTaskDto;
-import com.ladmakhi.projecttracker.features.tasks.dtos.GetTaskDetailDto;
-import com.ladmakhi.projecttracker.features.tasks.dtos.GetTaskDto;
-import com.ladmakhi.projecttracker.features.tasks.dtos.UpdateTaskDto;
+import com.ladmakhi.projecttracker.features.tasks.dtos.*;
 import com.ladmakhi.projecttracker.features.users.User;
 
 import java.util.List;
@@ -20,4 +17,6 @@ public interface TaskService {
     GetTaskDetailDto getTaskDetailById(Long id) throws Exception;
 
     Task getTaskById(Long id) throws Exception;
+
+    List<GetTaskDetailDto> searchTasks(SearchTaskDto dto);
 }
